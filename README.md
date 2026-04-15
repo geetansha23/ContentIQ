@@ -1,4 +1,4 @@
-#ContentIQ — AI Content Research Engine
+# ContentIQ — AI Content Research Engine
 
 ContentIQ is an AI-powered content research system that generates structured SEO intelligence from a single topic input. It provides keyword clusters, content angles, gap analysis, and recommended article ideas through a web interface.
 
