@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ContentIQ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #070b16;
+      --bg2: #0d1324;
+      --card: rgba(17, 24, 39, 0.75);
+      --card2: rgba(20, 29, 51, 0.9);
+      --border: rgba(255,255,255,0.08);
+      --text: #f5f7fb;
+      --muted: #9aa4b2;
+      --accent: #7c6cff;
+      --accent2: #4fd1c5;
+      --accent3: #ff8a65;
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124,108,255,0.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(79,209,197,0.15), transparent 28%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1150px, 92%);
+      margin: 0 auto;
+      padding: 40px 0 70px;
+    }
+
+    .hero {
+      padding: 34px 28px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      font-size: 24px;
+      box-shadow: 0 10px 30px rgba(124,108,255,0.35);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -1.8px;
+    }
+
+    .highlight {
+    background: linear-gradient(90deg, #ffffff, #a7b2ff, #7c6cff);
+    -webkit-background-clip: text;
+    background-clip: text;   /* add this line */
+    -webkit-text-fill-color: transparent;
+    }
+
+    .subtext {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 760px;
+      margin-bottom: 28px;
+    }
+
+    .search-box {
+      display: grid;
+      grid-template-columns: 1fr 170px;
+      gap: 12px;
+    }
+
+    .input-wrap {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 8px;
+    }
+
+    #topicInput {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 1rem;
+      padding: 18px 18px;
+    }
+
+    #topicInput::placeholder {
+      color: #7f8a9b;
+    }
+
+    #researchBtn {
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--accent), #9b8bff);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+      box-shadow: 0 15px 35px rgba(124,108,255,0.35);
+    }
+
+    #researchBtn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    #researchBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      margin-top: 16px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.12);
+      border-top-color: var(--accent2);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-box {
+      display: none;
+      margin-top: 18px;
+      background: rgba(255, 104, 104, 0.12);
+      border: 1px solid rgba(255, 104, 104, 0.35);
+      color: #ffb0b0;
+      padding: 14px 16px;
+      border-radius: 14px;
+    }
+
+    .results {
+      display: none;
+      margin-top: 24px;
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, rgba(124,108,255,0.16), rgba(79,209,197,0.10));
+      border: 1px solid rgba(124,108,255,0.25);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .summary-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #b8c2ff;
+      margin-bottom: 10px;
+    }
+
+    .summary-card p {
+      color: #edf2ff;
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      font-size: 1.28rem;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .clusters-grid {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .angles-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .two-col {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .card p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    .keyword-list {
+      list-style: none;
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .keyword-list li {
+      list-style: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(124,108,255,0.12);
+      border: 1px solid rgba(124,108,255,0.25);
+      color: #d9ddff;
+      font-size: 0.85rem;
+    }
+
+    .mini-label {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: var(--accent2);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .list-box ul {
+      list-style: none;
+      margin-top: 12px;
+    }
+
+    .list-box li {
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .list-box li:last-child {
+      border-bottom: none;
+    }
+
+    .list-box li::before {
+      content: "•";
+      color: var(--accent2);
+      font-weight: 700;
+      margin-right: 10px;
+    }
+
+    .action-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .action-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .action-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+      background: var(--accent2);
+      box-shadow: 0 0 0 6px rgba(79,209,197,0.12);
+    }
+
+    .action-content h4 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+
+    .action-content p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .download-wrap {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+
+    #downloadBtn {
+      display: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    #downloadBtn:hover {
+      border-color: rgba(79,209,197,0.35);
+      color: var(--accent2);
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    @media (max-width: 768px) {
+      .search-box {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        width: min(94%, 1150px);
+        padding-top: 22px;
+      }
+
+      .hero {
+        padding: 24px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="brand">
+        <div class="logo">🔎</div>
+        <div>
+          <h1>Content<span class="highlight">IQ</span></h1>
+        </div>
+      </div>
+
+      <p class="subtext">
+        AI-powered content research engine that turns a topic into structured SEO intelligence:
+        keyword clusters, content angles, gap analysis, and article ideas.
+      </p>
+
+      <div class="search-box">
+        <div class="input-wrap">
+          <input
+            id="topicInput"
+            type="text"
+            placeholder="Enter a topic, e.g. email marketing, blockchain fraud detection, personal finance..."
+          />
+        </div>
+        <button id="researchBtn" onclick="startResearch()">Research</button>
+      </div>
+
+      <div class="status" id="status">
+        <div class="spinner"></div>
+        <span id="statusText">Researching topic...</span>
+      </div>
+
+      <div class="error-box" id="errorBox"></div>
+    </section>
+
+    <section class="results" id="results">
+      <div class="download-wrap">
+        <button id="downloadBtn" onclick="downloadJSON()">Download JSON</button>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-label">Executive Summary</div>
+        <p id="execSummary"></p>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Keyword Clusters</h2>
+          <span class="badge" id="clusterCount">0 clusters</span>
+        </div>
+        <div class="grid clusters-grid" id="clustersGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Content Angles</h2>
+          <span class="badge" id="anglesCount">0 angles</span>
+        </div>
+        <div class="grid angles-grid" id="anglesGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Gap Analysis</h2>
+          <span class="badge" id="gapCount">0 items</span>
+        </div>
+        <div class="card list-box">
+          <ul id="gapList"></ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <h2>Recommended Articles</h2>
+          <span class="badge" id="articleCount">0 ideas</span>
+        </div>
+        <div class="card list-box">
+          <ul id="articleList"></ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let lastReport = null;
+
+    document.getElementById("topicInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        startResearch();
+      }
+    });
+
+    async function startResearch() {
+      const topic = document.getElementById("topicInput").value.trim();
+
+      if (!topic) {
+        showError("Please enter a topic first.");
+        return;
+      }
+
+      hideError();
+      document.getElementById("results").style.display = "none";
+      document.getElementById("status").style.display = "flex";
+      document.getElementById("researchBtn").disabled = true;
+
+      try {
+        const res = await fetch("/research", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ topic })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong.");
+        }
+
+        lastReport = data;
+        renderReport(data);
+
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        document.getElementById("status").style.display = "none";
+        document.getElementById("researchBtn").disabled = false;
+      }
+    }
+
+    function renderReport(data) {
+      const seo = data.seo_intelligence || {};
+
+      document.getElementById("execSummary").textContent =
+        data.summary || "SEO report generated successfully.";
+
+      const keywordClusters = seo.keyword_clusters || [];
+      const contentAngles = seo.content_angles || [];
+      const gapAnalysis = seo.gap_analysis || [];
+      const recommendedArticles = seo.recommended_articles || [];
+
+      document.getElementById("clusterCount").textContent = `${keywordClusters.length} clusters`;
+      document.getElementById("anglesCount").textContent = `${contentAngles.length} angles`;
+      document.getElementById("gapCount").textContent = `${gapAnalysis.length} items`;
+      document.getElementById("articleCount").textContent = `${recommendedArticles.length} ideas`;
+
+      document.getElementById("clustersGrid").innerHTML = keywordClusters.map(cluster => `
+        <div class="card">
+          <span class="mini-label">Cluster</span>
+          <h3>${escapeHtml(cluster.cluster_name || "Untitled Cluster")}</h3>
+          <ul class="keyword-list">
+            ${(cluster.keywords || []).map(keyword => `<li>${escapeHtml(keyword)}</li>`).join("")}
+          </ul>
+        </div>
+      `).join("");
+
+      document.getElementById("anglesGrid").innerHTML = contentAngles.map(angle => `
+        <div class="card">
+          <span class="mini-label">Content Angle</span>
+          <h3>${escapeHtml(angle)}</h3>
+          <p>Create a focused article or landing page around this angle to target a specific content opportunity.</p>
+        </div>
+      `).join("");
+
+      document.getElementById("gapList").innerHTML = gapAnalysis.map(item => `
+        <li>${escapeHtml(item)}</li>
+      `).join("");
+
+      document.getElementById("articleList").innerHTML = recommendedArticles.map(item => `
+        <li>${escapeHtml(item)}</li>
+      `).join("");
+
+      document.getElementById("downloadBtn").style.display = "inline-block";
+      document.getElementById("results").style.display = "block";
+      document.getElementById("results").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function downloadJSON() {
+      if (!lastReport) return;
+
+      const blob = new Blob([JSON.stringify(lastReport, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "contentiq-report.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function showError(message) {
+      const errorBox = document.getElementById("errorBox");
+      errorBox.textContent = message;
+      errorBox.style.display = "block";
+    }
+
+    function hideError() {
+      document.getElementById("errorBox").style.display = "none";
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
