@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from agent import run_agent
+import os
 
 app = Flask(__name__)
 CORS(app)  # Allow frontend JavaScript to call this API
@@ -24,6 +25,7 @@ def research():
         return jsonify({"error": "Missing 'topic' in request body"}), 400
 
     topic = data["topic"].strip()
+
     if not topic:
         return jsonify({"error": "Topic cannot be empty"}), 400
 
@@ -45,4 +47,6 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # IMPORTANT: Required for deployment (Render)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
